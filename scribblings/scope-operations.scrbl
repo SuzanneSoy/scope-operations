@@ -3,7 +3,7 @@
                     racket/base]]
 
 @title{scope-operations}
-@author{georges}
+@author[@author+email["Georges Dupéron" "georges.duperon@gmail.com"]]
 
 @defmodule[scope-operations]
 
