@@ -71,9 +71,21 @@
          scopes/c]{Set intersection of the given sets of scopes.}
 
 
-@defproc[(single-scope? [sc (or/c syntax? scopes/c)]) boolean?]{
+@defproc[(single-scopes? [sc (or/c syntax? scopes/c)]) boolean?]{
  Predicate which returns @racket[#true] iff the given set of scopes contains
  only a single scope.}
+
+@defproc[(zero-scope? [sc (or/c syntax? scopes/c)]) boolean?]{
+ Predicate which returns @racket[#true] iff the given set of scopes contains
+ no scopes (e.g. because sc has been created with
+ @racket[(datum->syntax #f 'id)]).}
+
+@defproc[(scopes-equal? [sc1 (or/c syntax? scopes/c)]
+                        [sc2 (or/c syntax? scopes/c)]) boolean?]{
+ Predicate which returns @racket[#true] iff the two given sets of scopes contain
+ the same scopes. It is a generalised form of @racket[bound-identifier=?], which
+ also works for scopes represented as functions like the ones created by
+ @racket[make-syntax-introducer] and @racket[make-syntax-delta-introducer].}
 
 @defproc[(scope-kind [sc (and/c (or/c syntax? scopes/c) single-scope?)])
          symbol?]{
@@ -93,3 +105,13 @@
          boolean?]{A shorthand for @racket[(eq? (scope-kind sc) 'local)]}
 @defproc[(top-scope? [sc (and/c (or/c syntax? scopes/c) single-scope?)])
          boolean?]{A shorthand for @racket[(eq? (scope-kind sc) 'top)]}
+
+@defproc[(has-all-scopes? [sc1 (or/c syntax? scopes/c)]
+                      [sc2 (or/c syntax? scopes/c)]) boolean?]{
+ Predicate which returns @racket[#true] iff all the scopes contained within the
+ set of scopes @racket[sc1] are present in the set of scopes @racket[sc2].}
+
+@defproc[(has-any-scope? [sc1 (or/c syntax? scopes/c)]
+                         [sc2 (or/c syntax? scopes/c)]) boolean?]{
+ Predicate which returns @racket[#true] iff any of the scopes contained within
+ the set of scopes @racket[sc1] are present in the set of scopes @racket[sc2].}

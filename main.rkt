@@ -12,13 +12,17 @@
          scopes-intersect
          (rename-out [scopes-flip scopes-symmetric-difference])
          single-scope?
+         zero-scopes?
+         scopes-equal?
          scope-kind
          use-site-scope?
          macro-scope?
          module-scope?
          intdef-scope?
          local-scope?
-         top-scope?)
+         top-scope?
+         has-all-scopes?
+         has-any-scope?)
 
 (define scopes/c
   (->* (syntax?) ([or/c 'add 'remove 'flip]) syntax?))
@@ -65,7 +69,19 @@
 (define/contract (single-scope? sc)
   (-> (or/c syntax? scopes/c) boolean?)
   (= (length (hash-ref (syntax-debug-info ((→scopes* sc) empty-scopes))
-                       'context))))
+                       'context))
+     1))
+
+(define/contract (zero-scopes? sc)
+  (-> (or/c syntax? scopes/c) boolean?)
+  (= (length (hash-ref (syntax-debug-info ((→scopes* sc) empty-scopes))
+                       'context))
+     0))
+
+(define/contract (scopes-equal? sc1 sc2)
+  (-> (or/c syntax? scopes/c) (or/c syntax? scopes/c) boolean?)
+  (bound-identifier=? ((→scopes* sc1) (datum->syntax #f 'test))
+                      ((→scopes* sc2) (datum->syntax #f 'test))))
 
 (define/contract (scope-kind sc)
   (-> (and/c (or/c syntax? scopes/c) single-scope?) symbol?)
@@ -92,9 +108,18 @@
   (-> (and/c (or/c syntax? scopes/c) single-scope?) boolean?)
   (eq? (scope-kind sc) 'local))
 
-;; Untested, I've seen this once, but can't remember where exactly. I think it
-;; occured while expanding a module with local-expand, and injecting the
-;; expanded body somewhere else.
+;; This appears on the #'module identifier itself, when expanding a module
+;; Run the macro stepper on an empty #lang racket program, and click on the
+;; #'module identifier, then on the "syntax object" tab to see it.
+;; (Stepper → View syntax properties to enable the "syntax object" tab).
 (define/contract (top-scope? sc)
   (-> (and/c (or/c syntax? scopes/c) single-scope?) boolean?)
   (eq? (scope-kind sc) 'top))
+
+(define/contract (has-all-scopes? sc1 sc2)
+  (-> (or/c syntax? scopes/c) (or/c syntax? scopes/c) boolean?)
+  (zero-scopes? (scopes-remove sc2 sc1)))
+
+(define/contract (has-any-scope? sc1 sc2)
+  (-> (or/c syntax? scopes/c) (or/c syntax? scopes/c) boolean?)
+  (not (zero-scopes? (scopes-intersect sc1 sc2))))
