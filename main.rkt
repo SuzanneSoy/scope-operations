@@ -6,6 +6,7 @@
          (rename-out [→scopes ->scopes]
                      [→scopes* ->scopes*])
          empty-scopes
+         empty-scopes-syntax
          scopes-add
          scopes-remove
          scopes-flip
@@ -27,14 +28,18 @@
 (define scopes/c
   (->* (syntax?) ([or/c 'add 'remove 'flip]) syntax?))
 
+(define/contract empty-scopes-syntax
+  syntax?
+  (datum->syntax #f 'zero))
+
 (define/contract (→scopes stx)
   (-> syntax? scopes/c)
   (make-syntax-delta-introducer (datum->syntax stx 'stx)
-                                (datum->syntax #f 'zero)))
+                                empty-scopes-syntax))
 
 (define/contract empty-scopes
   scopes/c
-  (→scopes (datum->syntax #f 'zero)))
+  (→scopes empty-scopes-syntax))
 
 (define/contract (→scopes* stx)
   (-> (or/c syntax? scopes/c) scopes/c)
@@ -44,17 +49,17 @@
 
 (define/contract (scopes-add sc1 sc2)
   (-> (or/c syntax? scopes/c) (or/c syntax? scopes/c) scopes/c)
-  (→scopes ((→scopes* sc1) ((→scopes* sc2) empty-scopes)
+  (→scopes ((→scopes* sc1) ((→scopes* sc2) empty-scopes-syntax)
                            'add)))
 
 (define/contract (scopes-remove sc1 sc2)
   (-> (or/c syntax? scopes/c) (or/c syntax? scopes/c) scopes/c)
-  (→scopes ((→scopes* sc1) ((→scopes* sc2) empty-scopes)
+  (→scopes ((→scopes* sc1) ((→scopes* sc2) empty-scopes-syntax)
                            'remove)))
 
 (define/contract (scopes-flip sc1 sc2)
   (-> (or/c syntax? scopes/c) (or/c syntax? scopes/c) scopes/c)
-  (→scopes ((→scopes* sc1) ((→scopes* sc2) empty-scopes)
+  (→scopes ((→scopes* sc1) ((→scopes* sc2) empty-scopes-syntax)
                            'flip)))
 
 (define/contract (scopes-intersect sc1 sc2)
@@ -68,24 +73,26 @@
 
 (define/contract (single-scope? sc)
   (-> (or/c syntax? scopes/c) boolean?)
-  (= (length (hash-ref (syntax-debug-info ((→scopes* sc) empty-scopes))
+  (= (length (hash-ref (syntax-debug-info
+                        ((→scopes* sc) empty-scopes-syntax))
                        'context))
      1))
 
 (define/contract (zero-scopes? sc)
   (-> (or/c syntax? scopes/c) boolean?)
-  (= (length (hash-ref (syntax-debug-info ((→scopes* sc) empty-scopes))
+  (= (length (hash-ref (syntax-debug-info
+                        ((→scopes* sc) empty-scopes-syntax))
                        'context))
      0))
 
 (define/contract (scopes-equal? sc1 sc2)
   (-> (or/c syntax? scopes/c) (or/c syntax? scopes/c) boolean?)
-  (bound-identifier=? ((→scopes* sc1) (datum->syntax #f 'test))
-                      ((→scopes* sc2) (datum->syntax #f 'test))))
+  (bound-identifier=? ((→scopes* sc1) empty-scopes-syntax)
+                      ((→scopes* sc2) empty-scopes-syntax)))
 
 (define/contract (scope-kind sc)
   (-> (and/c (or/c syntax? scopes/c) single-scope?) symbol?)
-  (define stx ((→scopes* sc) empty-scopes))
+  (define stx ((→scopes* sc) empty-scopes-syntax))
   (vector-ref (list-ref (hash-ref (syntax-debug-info stx) 'context) 0) 1))
 
 (define/contract (use-site-scope? sc)

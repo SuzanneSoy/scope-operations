@@ -39,6 +39,11 @@
  @racketblock[(→scopes (datum->syntax #f 'zero))]
 }
 
+@defthing[empty-scopes-syntax]{
+ A syntax object with an empty set of scopes, as produced by:
+ @racketblock[(datum->syntax #f 'zero)]
+}
+
 @defproc[(scopes-add [sc1 (or/c syntax? scopes/c)]
                      [sc2 (or/c syntax? scopes/c)])
          scopes/c]{Set union of the given sets of scopes.}
