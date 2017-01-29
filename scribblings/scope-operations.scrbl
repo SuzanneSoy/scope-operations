@@ -106,12 +106,12 @@
 @defproc[(top-scope? [sc (and/c (or/c syntax? scopes/c) single-scope?)])
          boolean?]{A shorthand for @racket[(eq? (scope-kind sc) 'top)]}
 
-@defproc[(has-all-scopes? [sc1 (or/c syntax? scopes/c)]
+@defproc[(all-scopes-in? [sc1 (or/c syntax? scopes/c)]
                       [sc2 (or/c syntax? scopes/c)]) boolean?]{
  Predicate which returns @racket[#true] iff all the scopes contained within the
  set of scopes @racket[sc1] are present in the set of scopes @racket[sc2].}
 
-@defproc[(has-any-scope? [sc1 (or/c syntax? scopes/c)]
+@defproc[(any-scope-in? [sc1 (or/c syntax? scopes/c)]
                          [sc2 (or/c syntax? scopes/c)]) boolean?]{
  Predicate which returns @racket[#true] iff any of the scopes contained within
  the set of scopes @racket[sc1] are present in the set of scopes @racket[sc2].}

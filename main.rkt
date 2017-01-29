@@ -21,8 +21,8 @@
          intdef-scope?
          local-scope?
          top-scope?
-         has-all-scopes?
-         has-any-scope?)
+         all-scopes-in?
+         any-scope-in?)
 
 (define scopes/c
   (->* (syntax?) ([or/c 'add 'remove 'flip]) syntax?))
@@ -116,10 +116,10 @@
   (-> (and/c (or/c syntax? scopes/c) single-scope?) boolean?)
   (eq? (scope-kind sc) 'top))
 
-(define/contract (has-all-scopes? sc1 sc2)
+(define/contract (all-scopes-in? sc1 sc2)
   (-> (or/c syntax? scopes/c) (or/c syntax? scopes/c) boolean?)
   (zero-scopes? (scopes-remove sc2 sc1)))
 
-(define/contract (has-any-scope? sc1 sc2)
+(define/contract (any-scope-in? sc1 sc2)
   (-> (or/c syntax? scopes/c) (or/c syntax? scopes/c) boolean?)
   (not (zero-scopes? (scopes-intersect sc1 sc2))))
