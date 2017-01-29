@@ -71,11 +71,11 @@
          scopes/c]{Set intersection of the given sets of scopes.}
 
 
-@defproc[(single-scopes? [sc (or/c syntax? scopes/c)]) boolean?]{
+@defproc[(single-scope? [sc (or/c syntax? scopes/c)]) boolean?]{
  Predicate which returns @racket[#true] iff the given set of scopes contains
  only a single scope.}
 
-@defproc[(zero-scope? [sc (or/c syntax? scopes/c)]) boolean?]{
+@defproc[(zero-scopes? [sc (or/c syntax? scopes/c)]) boolean?]{
  Predicate which returns @racket[#true] iff the given set of scopes contains
  no scopes (e.g. because sc has been created with
  @racket[(datum->syntax #f 'id)]).}

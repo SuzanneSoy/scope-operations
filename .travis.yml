@@ -49,10 +49,9 @@ script:
 script:
  - raco test -p scope-operations
  - raco setup --check-pkg-deps --no-zo --no-launcher --no-install --no-post-install --no-docs --pkgs scope-operations
- #- raco pkg install --deps search-auto doc-coverage
- #- if $RACKET_VERSION != "6.5" -a $RACKET_VERSION != "6.6"; then raco doc-coverage scope-operations; fi
- #- raco doc-coverage scope-operations
+ - raco pkg install --deps search-auto doc-coverage
+ - raco doc-coverage scope-operations
+ - raco pkg install --deps search-auto cover cover-codecov
+ - raco cover -b -f codecov -d $TRAVIS_BUILD_DIR/coverage .
 
 after_success:
- - raco pkg install --deps search-auto cover cover-coveralls
- - raco cover -b -f coveralls -d $TRAVIS_BUILD_DIR/coverage .
